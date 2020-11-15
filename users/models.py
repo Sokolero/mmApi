@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 
 from .managers import CustomUserManager
+from api.models import Category
 
 # Create your models here.
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -12,6 +13,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_master = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
+    first_name = models.CharField(max_length=128)
+    last_name = models.CharField(max_length=128)
+    phone = models.CharField(max_length=32)
+    categorys = models.ManyToManyField(Category)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELD = []

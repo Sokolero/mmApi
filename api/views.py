@@ -4,46 +4,35 @@ from rest_framework import permissions
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from .serializers import (ObjectSerializer, ObjectListSerializer,
- MasterSerializer, CategorySerializer)
-from .models import Object, Master, Category
+from .serializers import (
+    ObjectListSerializer,
+    CategorySerializer,
+    GallerySerializer,
+    MasterListSerializer,
+    )
+from .models import Object, Category, Gallery
+from users.permissions import IsMasterPermission, IsOwnerPermission
+from users.models import CustomUser
 
 # Create your views here.
-class IsMasterPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        user = request.user
-        return user.is_master
-
-
-class IsOwnerPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        user_id = request.user.id
-        changed_user_id = request.data['user']
-        return changed_user_id == user_id
-
-
+#GET object list - for all users
 class ObjectListView(generics.ListAPIView):
     queryset = Object.objects.all()
     serializer_class = ObjectListSerializer
-    permission_classes =  [AllowAny]
 
-
-class ObjectManageView(generics.CreateAPIView):
-    queryset = Object.objects.all()
-    serializer_class = ObjectSerializer
-    permission_classes = [IsAuthenticated, IsMasterPermission, IsOwnerPermission]
-
-
-class MasterListCreateView(generics.ListCreateAPIView):
-    queryset = Master.objects.all()
-    serializer_class = MasterSerializer
-    permission_classes = [IsAuthenticated, IsOwnerPermission]
-
-
-
-class CategoryList(generics.ListAPIView):
+#GET category list - for all users
+class CategoryListView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [AllowAny]
+
+#GET list of users that have 'is_master=True'
+class MasterListView(generics.ListAPIView):
+    queryset = CustomUser.objects.filter(is_master=True)
+    serializer_class = MasterListSerializer
+
+
+class GalleryListView(generics.ListAPIView):
+    serializer_class = GallerySerializer
+
+    def get_queryset(self):
+        return Gallery.objects.filter()
