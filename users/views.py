@@ -2,7 +2,7 @@ from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import CustomUserSerializer, CreateMasterSerializer
+from .serializers import CustomUserSerializer, CreateMasterSerializer, CustomUserMeSerializer
 from .models import CustomUser
 
 # Create your views here.
@@ -18,11 +18,9 @@ class CustomUserMeView(APIView):
 
     def get(self, request, *args, **kwargs):
         user = request.user
-        return Response({
-            "id": user.id,
-            "is_master": user.is_master,
-            "email": user.email,
-        })
+        serializer = CustomUserMeSerializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data)
 
 # UPDATE profile of the current authenticated user to change on
 # his status is_master=True

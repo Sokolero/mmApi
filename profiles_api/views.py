@@ -1,53 +1,64 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.parsers import FormParser, MultiPartParser
+from rest_framework.parsers import FileUploadParser, FormParser, MultiPartParser, JSONParser
 
-from .serializers import ObjectSerializer, GallerySerializer
+from .serializers import ObjectSerializer, GallerySerializer, ObjectListSerializer, GalleryDetailSerializer
 from api.models import Object, Category, Gallery
 from users.models import CustomUser
 from users.permissions import IsMasterPermission, IsOwnerPermission
 
 
 # Create your views here.
-class ObjectViewSet(viewsets.ModelViewSet):
-    queryset = Object.objects.all()
-    serializer_class = ObjectSerializer
-    permission_classes = [
-        IsAuthenticated,
-        IsMasterPermission,
-    ]
+class ObjectView(APIView):
 
-    def create(self, request):
+    # queryset = Object.objects.all()
+    # # permission_classes = [IsAuthenticated]
+    # serializer_class = ObjectSerializer
+
+    def post(self, request, *args, **kwargs):
+        import pdb; pdb.set_trace
+        print(request.data)
         user = request.user
         serializer = ObjectSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(user=user)
+        validated_data = serializer.validated_data
+        files = validated_data.pop('files')
+
+        object = Object.objects.create(
+            user=user,
+            X=validated_data.get('X'),
+            Y=validated_data.get('Y'),
+        )
+        categorys = [Category.objects.get(category_name=cat_name) for cat_name in validated_data.get('categorys')]
+        object.categorys.set(categorys)
+        gallerys = [Gallery(object=object, photo=file) for file in files]
+        Gallery.objects.bulk_create(gallerys)
         return Response(serializer.data)
 
-    def partial_update(self, request, pk):
-        object = Object.objects.get(pk=pk)
-        serializer = ObjectSerializer(object, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+
+class ObjectDetailView(generics.RetrieveAPIView):
+    queryset = Object.objects.all()
+    serializer_class = ObjectListSerializer
+
+# ==========
+class ObjectListView(generics.ListAPIView):
+    queryset = Object.objects.all()
+    # permission_classes = [IsAuthenticated, IsMasterPermission]
+    serializer_class = ObjectListSerializer
 
     def get_queryset(self):
-        return Object.objects.filter(user__pk=self.request.user.pk)
+        print(self.request.data)
+        return Object.objects.filter(user_id=self.request.user.id)
 
 
-class GalleryViewSet(viewsets.ModelViewSet):
+class GalleryListView(generics.ListAPIView):
     queryset = Gallery.objects.all()
-    permission_classes = [IsAuthenticated, IsMasterPermission]
     serializer_class = GallerySerializer
-    parser_classes = [MultiPartParser, FormParser]
 
-    def create(self, request):
-        user = request.user
-        serializer = GallerySerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(user=user)
-        return Response(serializer.data)
 
-    def get_queryset(self):
-        return Gallery.objects.filter(user__pk=self.request.user.pk)
+class GalleryDetailView(generics.RetrieveAPIView):
+    queryset = Gallery.objects.all()
+    serializer_class = GallerySerializer

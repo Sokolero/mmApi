@@ -30,9 +30,12 @@ class MasterListView(generics.ListAPIView):
     queryset = CustomUser.objects.filter(is_master=True)
     serializer_class = MasterListSerializer
 
-
+#GET list Gallerys filtered by 'object' referense
 class GalleryListView(generics.ListAPIView):
     serializer_class = GallerySerializer
 
     def get_queryset(self):
-        return Gallery.objects.filter()
+        object = self.request.query_params.get('object', None)
+        if object is not None:
+            queryset = Gallery.objects.filter(object__id=object)
+        return queryset

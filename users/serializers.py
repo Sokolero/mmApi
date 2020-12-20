@@ -16,6 +16,30 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.save()
         return user
 
+class CustomUserMeSerializer(serializers.ModelSerializer):
+    categorys = serializers.PrimaryKeyRelatedField(read_only=True, many=True)
+
+    class Meta:
+        model = CustomUser
+        fields = [
+            'id',
+            'email',
+            'is_master',
+            'first_name',
+            'last_name',
+            'phone',
+            'categorys'
+        ]
+        read_only_fields = [
+            'id',
+            'email',
+            'is_master',
+            'first_name',
+            'last_name',
+            'phone',
+            'categorys'
+        ]
+
 
 class CreateMasterSerializer(serializers.ModelSerializer):
 

@@ -25,12 +25,12 @@ class CategorySerializer(serializers.ModelSerializer):
 class MasterListSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'email', 'is_master']        
+        fields = ['id', 'email', 'is_master', 'first_name', 'last_name']
 
 
 class GallerySerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
-    object = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
+    object = serializers.PrimaryKeyRelatedField(queryset=Object.objects.all())
 
     class Meta:
         model = Gallery
