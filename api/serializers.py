@@ -29,9 +29,8 @@ class MasterListSerializer(serializers.ModelSerializer):
 
 
 class GallerySerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=CustomUser.objects.all())
     object = serializers.PrimaryKeyRelatedField(queryset=Object.objects.all())
 
     class Meta:
         model = Gallery
-        fields = ['user', 'object', 'photo']
+        fields = ['object', 'photo']

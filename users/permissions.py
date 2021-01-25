@@ -8,9 +8,6 @@ class IsMasterPermission(permissions.BasePermission):
 
 
 class IsOwnerPermission(permissions.BasePermission):
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        user_id = request.user.id
-        changed_user_id = request.data['user']
-        return changed_user_id == user_id
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        return user == obj.user

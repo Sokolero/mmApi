@@ -25,6 +25,6 @@ urlpatterns = [
     path('profiles_api/', include('profiles_api.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-urlpatterns += [
-    path('api-auth/', include('rest_framework.urls'))
-]
+# urlpatterns += [
+#     path('api-auth/', include('rest_framework.urls'))
+# ]
