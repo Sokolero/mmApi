@@ -13,8 +13,6 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
-import dj-database-url
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -94,10 +92,6 @@ DATABASES = {
 	'HOST': 'localhost',
     }
 }
-
-db_from_env = dj-database-url.config()
-DATABASE['default'].update(db_from_env)
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
