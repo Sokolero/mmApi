@@ -13,6 +13,8 @@ import os
 from pathlib import Path
 from datetime import timedelta
 
+import dj-database-url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -26,7 +28,7 @@ SECRET_KEY = 'e#aq-r7@)erxvt%&c6l5c7pbv_fot7gajrjlos%)7h)jzokd2#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -92,6 +94,9 @@ DATABASES = {
 	'HOST': 'localhost',
     }
 }
+
+db_from_env = dj-database-url.config()
+DATABASE['default'].update(db_from_env)
 
 
 # Password validation
